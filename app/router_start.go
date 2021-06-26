@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
+	"github.com/noworldwar/myapi/controller"
 	ctr "github.com/noworldwar/myapi/controller"
 	"github.com/noworldwar/myapi/model"
 )
@@ -14,6 +15,11 @@ import (
 func InitRouter() {
 	r := gin.Default()
 	r.Use(ctr.CheckToken())
+
+	r.POST("/validate", controller.Validate)
+	r.POST("/balance", controller.GetBalance)
+	r.POST("/debit", controller.Debit)
+	r.POST("/credit", controller.Credit)
 
 	model.WGServer = http.Server{Addr: ":80", Handler: r}
 }
