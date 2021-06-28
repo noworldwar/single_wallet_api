@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/go-redis/redis"
-	"github.com/noworldwar/myapi/model"
+	"github.com/noworldwar/single_wallet_api/internal/model"
 )
 
 func InitRedis() {

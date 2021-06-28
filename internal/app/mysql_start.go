@@ -3,7 +3,7 @@ package app
 import (
 	"log"
 
-	"single_wallet_api/internal/model"
+	"github.com/noworldwar/single_wallet_api/internal/model"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"

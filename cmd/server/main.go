@@ -1,7 +1,7 @@
 package main
 
 import (
-	"single_wallet_api/internal/app"
+	"github.com/noworldwar/single_wallet_api/internal/app"
 )
 
 func main() {
