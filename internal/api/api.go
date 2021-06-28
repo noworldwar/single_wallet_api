@@ -3,7 +3,7 @@ package api
 import "github.com/gin-gonic/gin"
 
 func Validate(c *gin.Context) {
-	c.JSON(200, gin.H{"playerID": "C2R0289KK616RUHLR110", "nickname": "test1", "currency": "RMB", "test": false, "time": 1574476825})
+	c.JSON(200, gin.H{"playerID": "test1", "nickname": "test1", "currency": "RMB", "test": false, "time": 1574476825})
 }
 func GetBalance(c *gin.Context) {
 	c.JSON(200, gin.H{"balacne": 2000, "currency": "RMB", "time": 1574476825})
