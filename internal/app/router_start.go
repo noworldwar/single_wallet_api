@@ -4,10 +4,10 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"single_wallet_api/internal/api"
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
-	"github.com/noworldwar/myapi/controller"
 	ctr "github.com/noworldwar/myapi/controller"
 	"github.com/noworldwar/myapi/model"
 )
@@ -16,10 +16,10 @@ func InitRouter() {
 	r := gin.Default()
 	r.Use(ctr.CheckToken())
 
-	r.POST("/validate", controller.Validate)
-	r.POST("/balance", controller.GetBalance)
-	r.POST("/debit", controller.Debit)
-	r.POST("/credit", controller.Credit)
+	r.POST("/validate", api.Validate)
+	r.POST("/balance", api.GetBalance)
+	r.POST("/debit", api.Debit)
+	r.POST("/credit", api.Credit)
 
 	model.WGServer = http.Server{Addr: ":80", Handler: r}
 }

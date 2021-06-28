@@ -3,9 +3,10 @@ package app
 import (
 	"log"
 
+	"single_wallet_api/internal/model"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	"github.com/noworldwar/myapi/model"
 	"xorm.io/core"
 )
 
@@ -22,7 +23,7 @@ func InitMySQL() {
 }
 
 func AutoMigrate() {
-	err := model.MyDB.Sync2(new(model.User))
+	err := model.MyDB.Sync2(new(model.Player), new(model.Transfer), new(model.Wallet))
 	if err != nil {
 		log.Fatalln("User Sync Error:", err)
 	}
