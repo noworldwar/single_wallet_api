@@ -5,8 +5,8 @@ type Transfer struct {
 	PlayerID   string `json:"playerID"   xorm:"varchar(30)"`
 	Amount     int64  `json:"amount"`
 	Success    bool   `json:"success"`
-	Created    int64  `xorm:"created"  `
-	Updated    int64  `xorm:"updated"  `
+	Created    int64  `xorm:"bigint"  `
+	Updated    int64  `xorm:"bigint"  `
 }
 
 func GetTransferBy(playerID string) (m []Transfer, err error) {

@@ -7,8 +7,8 @@ type Player struct {
 	Currency   string `xorm:"varchar(5) notnull"`
 	Balance    int64  `xorm:"bigint         notnull"`
 	Test       int    `xorm:"int notnull"`
-	Created    int64  `xorm:"created"  `
-	Updated    int64  `xorm:"updated"  `
+	Created    int64  `xorm:"bigint"  `
+	Updated    int64  `xorm:"bigint"  `
 }
 
 func GetPlayer(playerID string) (m Player, err error) {
