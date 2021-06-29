@@ -7,7 +7,7 @@ type Wallet struct {
 	Success bool    `json:"success"`
 }
 
-func UpdateBalance(playerID string, amount int64) (int64, error) {
+func UpdateBalance(playerID string, amount float64) (int64, error) {
 	session := MyDB.NewSession()
 	defer session.Close()
 	affected, err := session.Exec("UPDATE Player SET Balance=Balance+? WHERE PlayerID=?", amount, playerID)
