@@ -1,10 +1,12 @@
 package api
 
 import (
-	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/noworldwar/single_wallet_api/internal/model"
+	"github.com/rs/xid"
 )
 
 func Validate(c *gin.Context) {
@@ -33,14 +35,35 @@ func GetBalance(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{"message": "player not found"})
 	}
-	fmt.Println("balance: ", player_data.Balance)
 	c.JSON(200, gin.H{"balance": player_data.Balance, "currency": player_data.Currency, "time": player_data.Created})
 }
 
 func Debit(c *gin.Context) {
-	c.JSON(200, gin.H{"balance": 2000, "currency": "RMB", "time": 1574476825, "refID": "20200420XDCFSEDSE"})
+	playerID := c.PostForm("playerID")
+	amount := c.PostForm("amount")
+	amount_int, _ := strconv.ParseInt(amount, 10, 64)
+	currency := c.PostForm("currency")
+	balance, _ := model.UpdateBalance(playerID, -amount_int)
+	refID := time.Now().Format("20060102") + xid.New().String()
+	transfer := model.Transfer{TransferID: refID, PlayerID: playerID, Amount: -amount_int, Success: true, Created: time.Now().Unix(), Updated: time.Now().Unix()}
+	err := model.AddTransfer(transfer)
+	if err != nil {
+		c.JSON(500, gin.H{"message": "Internal Server Error"})
+	}
+	c.JSON(200, gin.H{"balance": balance, "currency": currency, "time": time.Now().Unix(), "refID": refID})
 }
 
 func Credit(c *gin.Context) {
-	c.JSON(200, gin.H{"balance": 2000, "currency": "RMB", "time": 1574476825, "refID": "20200420XDCFSEDSE"})
+	playerID := c.PostForm("playerID")
+	amount := c.PostForm("amount")
+	amount_int, _ := strconv.ParseInt(amount, 10, 64)
+	currency := c.PostForm("currency")
+	balance, _ := model.UpdateBalance(playerID, amount_int)
+	refID := time.Now().Format("20060102") + xid.New().String()
+	transfer := model.Transfer{TransferID: refID, PlayerID: playerID, Amount: amount_int, Success: true, Created: time.Now().Unix(), Updated: time.Now().Unix()}
+	err := model.AddTransfer(transfer)
+	if err != nil {
+		c.JSON(500, gin.H{"message": "Internal Server Error"})
+	}
+	c.JSON(200, gin.H{"balance": balance, "currency": currency, "time": time.Now().Unix(), "refID": refID})
 }
