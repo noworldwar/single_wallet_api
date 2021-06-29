@@ -5,7 +5,7 @@ import (
 )
 
 func Validate(c *gin.Context) {
-	c.JSON(200, gin.H{"playerID": "test1", "nickname": "test1", "currency": "RMB", "test": 0, "time": 1624944938})
+	c.JSON(200, gin.H{"playerID": "test1", "nickname": "test1", "currency": "RMB", "test": false, "time": 1624944938})
 	// playerID := c.PostForm("playerID")
 	// player_data, err := model.GetPlayer(playerID)
 	// if err != nil {
