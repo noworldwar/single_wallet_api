@@ -1,10 +1,16 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
 func Validate(c *gin.Context) {
+	fmt.Println("playerID: ", c.PostForm("playerID"))
+	fmt.Println("token: ", c.PostForm("token"))
+	fmt.Println("operatorID: ", c.PostForm("operatorID"))
+	fmt.Println("appSecret: ", c.PostForm("appSecret"))
 	c.JSON(200, gin.H{"playerID": "mike", "nickname": "Mike", "currency": "RMB", "test": false, "time": 1624944938})
 	// playerID := c.PostForm("playerID")
 	// player_data, err := model.GetPlayer(playerID)
@@ -21,6 +27,10 @@ func Validate(c *gin.Context) {
 	// c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": test_bool, "time": player_data.Created})
 }
 func GetBalance(c *gin.Context) {
+	fmt.Println("playerID: ", c.PostForm("playerID"))
+	fmt.Println("token: ", c.PostForm("token"))
+	fmt.Println("operatorID: ", c.PostForm("operatorID"))
+	fmt.Println("appSecret: ", c.PostForm("appSecret"))
 	c.JSON(200, gin.H{"balacne": 30000000, "currency": "RMB", "time": 1624944938})
 	// playerID := c.PostForm("playerID")
 	// player_data, err := model.GetPlayer(playerID)
