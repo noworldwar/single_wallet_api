@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -11,12 +10,10 @@ import (
 )
 
 func Validate(c *gin.Context) {
-
 	playerID := c.PostForm("playerID")
 	if playerID == "" && c.PostForm("token") != "" {
 		playerID = c.PostForm("token")
 	}
-
 	player_data, err := model.GetPlayer(playerID)
 	if err != nil {
 		c.JSON(400, gin.H{"message": "player not found"})
@@ -40,10 +37,6 @@ func GetBalance(c *gin.Context) {
 }
 
 func Debit(c *gin.Context) {
-	fmt.Println("playerID: ", c.PostForm("playerID"))
-	fmt.Println("token: ", c.PostForm("token"))
-	fmt.Println("amount: ", c.PostForm("amount"))
-	fmt.Println("currency: ", c.PostForm("currency"))
 	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
