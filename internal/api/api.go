@@ -48,8 +48,8 @@ func Debit(c *gin.Context) {
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
-	balance, err1 := model.UpdateBalance(playerID, -amount_float)
-	fmt.Println(err1.Error())
+	balance, err1 := model.UpdateBalance(playerID, amount_float)
+	fmt.Println("balacne: ", balance, err1.Error())
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.Transfer{TransferID: refID, PlayerID: playerID, Type: "Debit", Amount: amount_float, Success: true, Created: time.Now().Unix(), Updated: time.Now().Unix()}
 	err := model.AddTransfer(transfer)
@@ -66,7 +66,7 @@ func Credit(c *gin.Context) {
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
 	balance, err1 := model.UpdateBalance(playerID, amount_float)
-	fmt.Println(err1.Error())
+	fmt.Println("balacne: ", balance, err1.Error())
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.Transfer{TransferID: refID, PlayerID: playerID, Type: "Credit", Amount: amount_float, Success: true, Created: time.Now().Unix(), Updated: time.Now().Unix()}
 	err := model.AddTransfer(transfer)
