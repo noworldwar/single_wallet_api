@@ -45,12 +45,12 @@ func Debit(c *gin.Context) {
 		playerID = c.PostForm("token")
 	}
 	amount := c.PostForm("amount")
-	amount_int, _ := strconv.ParseInt(amount, 10, 64)
+	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
-	balance, err1 := model.UpdateBalance(playerID, -float64(amount_int))
+	balance, err1 := model.UpdateBalance(playerID, -amount_float)
 	fmt.Println(err1.Error())
 	refID := time.Now().Format("20060102") + xid.New().String()
-	transfer := model.Transfer{TransferID: refID, PlayerID: playerID, Type: "Debit", Amount: amount_int, Success: true, Created: time.Now().Unix(), Updated: time.Now().Unix()}
+	transfer := model.Transfer{TransferID: refID, PlayerID: playerID, Type: "Debit", Amount: amount_float, Success: true, Created: time.Now().Unix(), Updated: time.Now().Unix()}
 	err := model.AddTransfer(transfer)
 	fmt.Println(err.Error())
 	if err != nil {
@@ -65,12 +65,12 @@ func Credit(c *gin.Context) {
 		playerID = c.PostForm("token")
 	}
 	amount := c.PostForm("amount")
-	amount_int, _ := strconv.ParseInt(amount, 10, 64)
+	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
-	balance, err1 := model.UpdateBalance(playerID, float64(amount_int))
+	balance, err1 := model.UpdateBalance(playerID, amount_float)
 	fmt.Println(err1.Error())
 	refID := time.Now().Format("20060102") + xid.New().String()
-	transfer := model.Transfer{TransferID: refID, PlayerID: playerID, Type: "Credit", Amount: amount_int, Success: true, Created: time.Now().Unix(), Updated: time.Now().Unix()}
+	transfer := model.Transfer{TransferID: refID, PlayerID: playerID, Type: "Credit", Amount: amount_float, Success: true, Created: time.Now().Unix(), Updated: time.Now().Unix()}
 	err := model.AddTransfer(transfer)
 	fmt.Println(err.Error())
 	if err != nil {
