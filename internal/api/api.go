@@ -40,6 +40,10 @@ func GetBalance(c *gin.Context) {
 }
 
 func Debit(c *gin.Context) {
+	fmt.Println(c.PostForm("playerID"))
+	fmt.Println(c.PostForm("token"))
+	fmt.Println(c.PostForm("amount"))
+	fmt.Println(c.PostForm("currency"))
 	playerID := c.PostForm("playerID")
 	if playerID == "" && c.PostForm("token") != "" {
 		playerID = c.PostForm("token")
