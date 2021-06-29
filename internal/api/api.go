@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/noworldwar/single_wallet_api/internal/model"
 )
@@ -17,8 +19,10 @@ func Validate(c *gin.Context) {
 	} else {
 		test_bool = true
 	}
+	rsp := gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": test_bool, "time": player_data.Created}
 
-	c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": test_bool, "time": player_data.Created})
+	fmt.Println(rsp)
+	c.JSON(200, rsp)
 }
 func GetBalance(c *gin.Context) {
 	playerID := c.PostForm("playerID")
@@ -26,7 +30,9 @@ func GetBalance(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{"message": "player not found"})
 	}
-	c.JSON(200, gin.H{"balacne": player_data.Balance, "currency": player_data.Currency, "time": player_data.Created})
+	rsp := gin.H{"balacne": player_data.Balance, "currency": player_data.Currency, "time": player_data.Created}
+	fmt.Println(rsp)
+	c.JSON(200, rsp)
 }
 
 func Debit(c *gin.Context) {
