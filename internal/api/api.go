@@ -9,8 +9,9 @@ import (
 
 func Validate(c *gin.Context) {
 	playerID := c.PostForm("playerID")
-	player_data, err := model.GetPlayer(playerID)
-	if err != nil {
+	fmt.Println(playerID)
+	player_data, _ := model.GetPlayer(playerID)
+	if player_data.PlayerID == "" {
 		c.JSON(400, gin.H{"message": "player not found"})
 	}
 	var test_bool bool
@@ -26,8 +27,9 @@ func Validate(c *gin.Context) {
 }
 func GetBalance(c *gin.Context) {
 	playerID := c.PostForm("playerID")
-	player_data, err := model.GetPlayer(playerID)
-	if err != nil {
+	fmt.Println(playerID)
+	player_data, _ := model.GetPlayer(playerID)
+	if player_data.PlayerID == "" {
 		c.JSON(400, gin.H{"message": "player not found"})
 	}
 	rsp := gin.H{"balacne": player_data.Balance, "currency": player_data.Currency, "time": player_data.Created}
