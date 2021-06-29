@@ -34,13 +34,13 @@ func GetBalance(c *gin.Context) {
 		c.JSON(400, gin.H{"message": "player not found"})
 	}
 	fmt.Println("balance: ", player_data.Balance)
-	c.JSON(200, gin.H{"balacne": player_data.Balance, "currency": player_data.Currency, "time": player_data.Created})
+	c.JSON(200, gin.H{"balance": player_data.Balance, "currency": player_data.Currency, "time": player_data.Created})
 }
 
 func Debit(c *gin.Context) {
-	c.JSON(200, gin.H{"balacne": 2000, "currency": "RMB", "time": 1574476825, "refID": "20200420XDCFSEDSE"})
+	c.JSON(200, gin.H{"balance": 2000, "currency": "RMB", "time": 1574476825, "refID": "20200420XDCFSEDSE"})
 }
 
 func Credit(c *gin.Context) {
-	c.JSON(200, gin.H{"balacne": 2000, "currency": "RMB", "time": 1574476825, "refID": "20200420XDCFSEDSE"})
+	c.JSON(200, gin.H{"balance": 2000, "currency": "RMB", "time": 1574476825, "refID": "20200420XDCFSEDSE"})
 }
