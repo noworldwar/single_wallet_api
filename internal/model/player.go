@@ -5,7 +5,7 @@ type Player struct {
 	OpPlayerID string  `json:"opPlayerID" xorm:"varchar(25) notnull"`
 	Nickname   string  `json:"nickname" xorm:"varchar(255) notnull"`
 	Currency   string  `json:"currency" xorm:"varchar(5) notnull"`
-	Balance    float64 `json:"balance" xorm:"bigint         notnull"`
+	Balance    float64 `json:"balance" xorm:"float         notnull"`
 	Test       int     `xorm:"int notnull"`
 	Created    int64   `xorm:"bigint"  `
 	Updated    int64   `xorm:"bigint"  `
