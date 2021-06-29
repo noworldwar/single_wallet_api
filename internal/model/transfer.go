@@ -12,7 +12,7 @@ type Transfer struct {
 func GetTransferBy(playerID string) (m []Transfer, err error) {
 	session := MyDB.NewSession()
 	defer session.Close()
-	err = session.Where("player_id=?", playerID).Desc("created").Limit(10, 0).Find(&m)
+	err = session.Where("PlayerID=?", playerID).Desc("Created").Limit(10, 0).Find(&m)
 	return
 }
 
