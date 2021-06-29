@@ -48,8 +48,10 @@ func Debit(c *gin.Context) {
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
-	balance, _ := model.UpdateBalance(playerID, -amount_float)
-	// fmt.Println("balance: ", balance, err1.Error())
+	balance, err1 := model.UpdateBalance(playerID, -amount_float)
+	if err1 != nil {
+		c.JSON(500, gin.H{"message": "Internal Server Error"})
+	}
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.Transfer{
 		TransferID: refID,
@@ -61,7 +63,6 @@ func Debit(c *gin.Context) {
 		Updated:    time.Now().Unix(),
 	}
 	err := model.AddTransfer(transfer)
-	fmt.Println(err.Error())
 	if err != nil {
 		c.JSON(500, gin.H{"message": "Internal Server Error"})
 	}
@@ -73,8 +74,10 @@ func Credit(c *gin.Context) {
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
-	balance, _ := model.UpdateBalance(playerID, amount_float)
-	// fmt.Println("balance: ", balance, err1.Error())
+	balance, err1 := model.UpdateBalance(playerID, amount_float)
+	if err1 != nil {
+		c.JSON(500, gin.H{"message": "Internal Server Error"})
+	}
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.Transfer{TransferID: refID,
 		PlayerID: playerID,
@@ -85,7 +88,6 @@ func Credit(c *gin.Context) {
 		Updated:  time.Now().Unix(),
 	}
 	err := model.AddTransfer(transfer)
-	fmt.Println(err.Error())
 	if err != nil {
 		c.JSON(500, gin.H{"message": "Internal Server Error"})
 	}
