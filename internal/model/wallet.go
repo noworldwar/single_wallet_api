@@ -19,11 +19,11 @@ func UpdateBalance(playerID string, amount float64) (float64, error) {
 		return 0, errors.New("affected 0")
 	}
 
-	var m Player
-	_, err = session.ID(playerID).Get(&m)
-	if err != nil {
-		return 0, err
-	}
+	// var m Player
+	// _, err = session.ID(playerID).Get(&m)
+	// if err != nil {
+	// 	return 0, err
+	// }
 
-	return m.Balance, nil
+	return 0, nil
 }

@@ -45,9 +45,6 @@ func Debit(c *gin.Context) {
 	fmt.Println("amount: ", c.PostForm("amount"))
 	fmt.Println("currency: ", c.PostForm("currency"))
 	playerID := c.PostForm("playerID")
-	if playerID == "" && c.PostForm("token") != "" {
-		playerID = c.PostForm("token")
-	}
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
@@ -65,9 +62,6 @@ func Debit(c *gin.Context) {
 
 func Credit(c *gin.Context) {
 	playerID := c.PostForm("playerID")
-	if playerID == "" && c.PostForm("token") != "" {
-		playerID = c.PostForm("token")
-	}
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
