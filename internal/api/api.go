@@ -21,6 +21,11 @@ func Validate(c *gin.Context) {
 			c.JSON(400, gin.H{"message": "player not found"})
 			return
 		}
+
+		if player_data.PlayerID == "" {
+			c.JSON(400, gin.H{"message": "player not found"})
+			return
+		}
 		token := model.SetPlayerInfo(player_data)
 		c.JSON(200, gin.H{"token": token})
 		return
@@ -29,7 +34,7 @@ func Validate(c *gin.Context) {
 	if c.PostForm("token") != "" {
 		player_info := model.GetPlayerInfo(c.PostForm("token"))
 		player_data, err = model.GetPlayer(player_info.PlayerID)
-		if err != nil {
+		if err != nil || player_data.PlayerID == "" {
 			c.JSON(400, gin.H{"message": "player not found"})
 			return
 		}
