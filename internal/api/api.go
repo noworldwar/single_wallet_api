@@ -15,32 +15,38 @@ func Validate(c *gin.Context) {
 	var player_data model.Player
 	var err error
 
-	if playerID != "" && c.PostForm("token") == "" {
-		player_data, err = model.GetPlayer(playerID)
-		if err != nil {
-			c.JSON(400, gin.H{"message": "player not found"})
-			return
-		}
-		token := model.SetPlayerInfo(player_data)
-		c.JSON(200, gin.H{"token": token})
+	// if playerID != "" && c.PostForm("token") == "" {
+	// 	player_data, err = model.GetPlayer(playerID)
+	// 	if err != nil {
+	// 		c.JSON(400, gin.H{"message": "player not found"})
+	// 		return
+	// 	}
+	// 	token := model.SetPlayerInfo(player_data)
+	// 	c.JSON(200, gin.H{"token": token})
+	// 	return
+	// }
+
+	// if c.PostForm("token") != "" {
+	// 	player_info := model.GetPlayerInfo(c.PostForm("token"))
+	// 	player_data, err = model.GetPlayer(player_info.PlayerID)
+	// 	if err != nil {
+	// 		c.JSON(400, gin.H{"message": "player not found"})
+	// 		return
+	// 	}
+	// 	c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
+	// 	return
+	// } else if playerID == "" && c.PostForm("token") == "" {
+	// 	c.JSON(400, gin.H{"message": "Missing parameter"})
+	// 	return
+	// }
+
+	player_data, err = model.GetPlayer(playerID)
+	if err != nil {
+		c.JSON(400, gin.H{"message": "player not found"})
 		return
 	}
 
-	if c.PostForm("token") != "" {
-		player_info := model.GetPlayerInfo(c.PostForm("token"))
-		player_data, err = model.GetPlayer(player_info.PlayerID)
-		if err != nil {
-			c.JSON(400, gin.H{"message": "player not found"})
-			return
-		}
-		c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
-		return
-	} else if playerID == "" && c.PostForm("token") == "" {
-		c.JSON(400, gin.H{"message": "Missing parameter"})
-		return
-	}
-
-	// c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
+	c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
 }
 
 func GetBalance(c *gin.Context) {
@@ -59,7 +65,6 @@ func GetBalance(c *gin.Context) {
 	// fmt.Println(player_info)
 	c.JSON(200, gin.H{"balance": player_data.Balance, "currency": player_data.Currency, "time": player_data.Created})
 }
-
 func Debit(c *gin.Context) {
 	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
