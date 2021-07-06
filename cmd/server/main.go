@@ -6,7 +6,7 @@ import (
 
 func main() {
 	app.InitMySQL()
-	app.InitRedis()
+	// app.InitRedis()
 	app.InitRouter()
 	go app.RunRouter()
 	app.Cleanup()
