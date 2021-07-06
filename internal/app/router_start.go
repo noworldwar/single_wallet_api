@@ -22,7 +22,7 @@ func InitRouter() {
 	r.POST("/debit", api.Debit)
 	r.POST("/credit", api.Credit)
 
-	model.WGServer = http.Server{Addr: ":80", Handler: r}
+	model.WGServer = http.Server{Addr: ":7901", Handler: r}
 }
 
 func RunRouter() {
