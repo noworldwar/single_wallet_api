@@ -71,13 +71,9 @@ func GetBalance(c *gin.Context) {
 	if playerID == "" && c.PostForm("token") != "" {
 		playerID = c.PostForm("token")
 	}
-	if missing := utils.CheckPostFormData(c, "token", "playerID"); missing != "" {
-		c.JSON(400, gin.H{"message": "Missing parameter: " + missing})
-		return
-	}
 
 	player_data, err := model.GetPlayer(playerID)
-	if err != nil {
+	if err != nil || player_data.PlayerID == "" {
 		c.JSON(400, gin.H{"message": "player not found"})
 	}
 	// player_info := model.GetPlayerInfo(token)
