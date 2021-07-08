@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -11,6 +12,8 @@ import (
 )
 
 func Validate(c *gin.Context) {
+	fmt.Println("token: ", c.PostForm("token"))
+	fmt.Println("playerID: ", c.PostForm("playerID"))
 	playerID := c.PostForm("playerID")
 	var player_data model.Player
 	var err error
@@ -60,6 +63,8 @@ func Validate(c *gin.Context) {
 }
 
 func GetBalance(c *gin.Context) {
+	fmt.Println("token: ", c.PostForm("token"))
+	fmt.Println("playerID: ", c.PostForm("playerID"))
 	// token := c.PostForm("token")
 	playerID := c.PostForm("playerID")
 	if missing := utils.CheckPostFormData(c, "token", "playerID"); missing != "" {
@@ -77,6 +82,10 @@ func GetBalance(c *gin.Context) {
 }
 
 func Debit(c *gin.Context) {
+	fmt.Println("amount: ", c.PostForm("amount"))
+	fmt.Println("playerID: ", c.PostForm("playerID"))
+	fmt.Println("currency: ", c.PostForm("currency"))
+
 	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
@@ -103,6 +112,10 @@ func Debit(c *gin.Context) {
 }
 
 func Credit(c *gin.Context) {
+	fmt.Println("amount: ", c.PostForm("amount"))
+	fmt.Println("playerID: ", c.PostForm("playerID"))
+	fmt.Println("currency: ", c.PostForm("currency"))
+
 	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
