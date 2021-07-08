@@ -66,7 +66,11 @@ func GetBalance(c *gin.Context) {
 	fmt.Println("token: ", c.PostForm("token"))
 	fmt.Println("playerID: ", c.PostForm("playerID"))
 	// token := c.PostForm("token")
+
 	playerID := c.PostForm("playerID")
+	if playerID == "" && c.PostForm("token") != "" {
+		playerID = c.PostForm("token")
+	}
 	if missing := utils.CheckPostFormData(c, "token", "playerID"); missing != "" {
 		c.JSON(400, gin.H{"message": "Missing parameter: " + missing})
 		return
@@ -87,6 +91,9 @@ func Debit(c *gin.Context) {
 	fmt.Println("currency: ", c.PostForm("currency"))
 
 	playerID := c.PostForm("playerID")
+	if playerID == "" && c.PostForm("token") != "" {
+		playerID = c.PostForm("token")
+	}
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
@@ -117,6 +124,9 @@ func Credit(c *gin.Context) {
 	fmt.Println("currency: ", c.PostForm("currency"))
 
 	playerID := c.PostForm("playerID")
+	if playerID == "" && c.PostForm("token") != "" {
+		playerID = c.PostForm("token")
+	}
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
