@@ -95,7 +95,6 @@ func Debit(c *gin.Context) {
 	logrus.Println("gameID: ", c.PostForm("gameID"))
 	logrus.Println("betID: ", c.PostForm("betID"))
 	logrus.Println("amount: ", c.PostForm("amount"))
-	logrus.Println("currency: ", c.PostForm("currency"))
 	logrus.Println("type: ", c.PostForm("type"))
 	logrus.Println("time: ", c.PostForm("time"))
 
@@ -133,7 +132,6 @@ func Credit(c *gin.Context) {
 	logrus.Println("gameID: ", c.PostForm("gameID"))
 	logrus.Println("uid: ", c.PostForm("uid"))
 	logrus.Println("amount: ", c.PostForm("amount"))
-	logrus.Println("uid: ", c.PostForm("uid"))
 	logrus.Println("type: ", c.PostForm("type"))
 	logrus.Println("time: ", c.PostForm("time"))
 	logrus.Println("playerID: ", c.PostForm("playerID"))
