@@ -9,11 +9,13 @@ import (
 	"github.com/noworldwar/single_wallet_api/internal/model"
 	"github.com/noworldwar/single_wallet_api/internal/pkg/utils"
 	"github.com/rs/xid"
+	logrus "github.com/sirupsen/logrus"
 )
 
 func Validate(c *gin.Context) {
 	fmt.Println("token: ", c.PostForm("token"))
-	fmt.Println("playerID: ", c.PostForm("playerID"))
+	fmt.Println("operatorID: ", c.PostForm("operatorID"))
+	fmt.Println("appSecret: ", c.PostForm("appSecret"))
 	playerID := c.PostForm("playerID")
 	var player_data model.Player
 	var err error
@@ -52,6 +54,8 @@ func Validate(c *gin.Context) {
 		playerID = c.PostForm("token")
 	}
 	player_data, err = model.GetPlayer(playerID)
+	logrus.Println("log test pr: ", fmt.Errorf("%s no data", playerID))
+
 	if err != nil || player_data.PlayerID == "" {
 		c.JSON(400, gin.H{"message": "player not found"})
 		return
@@ -64,6 +68,8 @@ func Validate(c *gin.Context) {
 
 func GetBalance(c *gin.Context) {
 	fmt.Println("token: ", c.PostForm("token"))
+	fmt.Println("operatorID: ", c.PostForm("operatorID"))
+	fmt.Println("appSecret: ", c.PostForm("appSecret"))
 	fmt.Println("playerID: ", c.PostForm("playerID"))
 	// token := c.PostForm("token")
 
@@ -85,6 +91,15 @@ func Debit(c *gin.Context) {
 	fmt.Println("amount: ", c.PostForm("amount"))
 	fmt.Println("playerID: ", c.PostForm("playerID"))
 	fmt.Println("currency: ", c.PostForm("currency"))
+	fmt.Println("token: ", c.PostForm("token"))
+	fmt.Println("operatorID: ", c.PostForm("operatorID"))
+	fmt.Println("appSecret: ", c.PostForm("appSecret"))
+	fmt.Println("gameID: ", c.PostForm("gameID"))
+	fmt.Println("betID: ", c.PostForm("betID"))
+	fmt.Println("amount: ", c.PostForm("amount"))
+	fmt.Println("currency: ", c.PostForm("currency"))
+	fmt.Println("type: ", c.PostForm("type"))
+	fmt.Println("time: ", c.PostForm("time"))
 
 	playerID := c.PostForm("playerID")
 	if playerID == "" && c.PostForm("token") != "" {
@@ -114,7 +129,15 @@ func Debit(c *gin.Context) {
 }
 
 func Credit(c *gin.Context) {
+	fmt.Println("token: ", c.PostForm("token"))
+	fmt.Println("operatorID: ", c.PostForm("operatorID"))
+	fmt.Println("appSecret: ", c.PostForm("appSecret"))
+	fmt.Println("gameID: ", c.PostForm("gameID"))
+	fmt.Println("uid: ", c.PostForm("uid"))
 	fmt.Println("amount: ", c.PostForm("amount"))
+	fmt.Println("uid: ", c.PostForm("uid"))
+	fmt.Println("type: ", c.PostForm("type"))
+	fmt.Println("time: ", c.PostForm("time"))
 	fmt.Println("playerID: ", c.PostForm("playerID"))
 	fmt.Println("currency: ", c.PostForm("currency"))
 
