@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -13,9 +12,9 @@ import (
 )
 
 func Validate(c *gin.Context) {
-	fmt.Println("token: ", c.PostForm("token"))
-	fmt.Println("operatorID: ", c.PostForm("operatorID"))
-	fmt.Println("appSecret: ", c.PostForm("appSecret"))
+	logrus.Println("token: ", c.PostForm("token"))
+	logrus.Println("operatorID: ", c.PostForm("operatorID"))
+	logrus.Println("appSecret: ", c.PostForm("appSecret"))
 	playerID := c.PostForm("playerID")
 	var player_data model.Player
 	var err error
@@ -54,7 +53,6 @@ func Validate(c *gin.Context) {
 		playerID = c.PostForm("token")
 	}
 	player_data, err = model.GetPlayer(playerID)
-	logrus.Println("log test pr: ", fmt.Errorf("%s no data", playerID))
 
 	if err != nil || player_data.PlayerID == "" {
 		c.JSON(400, gin.H{"message": "player not found"})
@@ -67,10 +65,10 @@ func Validate(c *gin.Context) {
 }
 
 func GetBalance(c *gin.Context) {
-	fmt.Println("token: ", c.PostForm("token"))
-	fmt.Println("operatorID: ", c.PostForm("operatorID"))
-	fmt.Println("appSecret: ", c.PostForm("appSecret"))
-	fmt.Println("playerID: ", c.PostForm("playerID"))
+	logrus.Println("token: ", c.PostForm("token"))
+	logrus.Println("operatorID: ", c.PostForm("operatorID"))
+	logrus.Println("appSecret: ", c.PostForm("appSecret"))
+	logrus.Println("playerID: ", c.PostForm("playerID"))
 	// token := c.PostForm("token")
 
 	playerID := c.PostForm("playerID")
@@ -83,23 +81,23 @@ func GetBalance(c *gin.Context) {
 		c.JSON(400, gin.H{"message": "player not found"})
 	}
 	// player_info := model.GetPlayerInfo(token)
-	// fmt.Println(player_info)
+	// logrus.Println(player_info)
 	c.JSON(200, gin.H{"balance": player_data.Balance, "currency": player_data.Currency, "time": player_data.Created})
 }
 
 func Debit(c *gin.Context) {
-	fmt.Println("amount: ", c.PostForm("amount"))
-	fmt.Println("playerID: ", c.PostForm("playerID"))
-	fmt.Println("currency: ", c.PostForm("currency"))
-	fmt.Println("token: ", c.PostForm("token"))
-	fmt.Println("operatorID: ", c.PostForm("operatorID"))
-	fmt.Println("appSecret: ", c.PostForm("appSecret"))
-	fmt.Println("gameID: ", c.PostForm("gameID"))
-	fmt.Println("betID: ", c.PostForm("betID"))
-	fmt.Println("amount: ", c.PostForm("amount"))
-	fmt.Println("currency: ", c.PostForm("currency"))
-	fmt.Println("type: ", c.PostForm("type"))
-	fmt.Println("time: ", c.PostForm("time"))
+	logrus.Println("amount: ", c.PostForm("amount"))
+	logrus.Println("playerID: ", c.PostForm("playerID"))
+	logrus.Println("currency: ", c.PostForm("currency"))
+	logrus.Println("token: ", c.PostForm("token"))
+	logrus.Println("operatorID: ", c.PostForm("operatorID"))
+	logrus.Println("appSecret: ", c.PostForm("appSecret"))
+	logrus.Println("gameID: ", c.PostForm("gameID"))
+	logrus.Println("betID: ", c.PostForm("betID"))
+	logrus.Println("amount: ", c.PostForm("amount"))
+	logrus.Println("currency: ", c.PostForm("currency"))
+	logrus.Println("type: ", c.PostForm("type"))
+	logrus.Println("time: ", c.PostForm("time"))
 
 	playerID := c.PostForm("playerID")
 	if playerID == "" && c.PostForm("token") != "" {
@@ -129,17 +127,17 @@ func Debit(c *gin.Context) {
 }
 
 func Credit(c *gin.Context) {
-	fmt.Println("token: ", c.PostForm("token"))
-	fmt.Println("operatorID: ", c.PostForm("operatorID"))
-	fmt.Println("appSecret: ", c.PostForm("appSecret"))
-	fmt.Println("gameID: ", c.PostForm("gameID"))
-	fmt.Println("uid: ", c.PostForm("uid"))
-	fmt.Println("amount: ", c.PostForm("amount"))
-	fmt.Println("uid: ", c.PostForm("uid"))
-	fmt.Println("type: ", c.PostForm("type"))
-	fmt.Println("time: ", c.PostForm("time"))
-	fmt.Println("playerID: ", c.PostForm("playerID"))
-	fmt.Println("currency: ", c.PostForm("currency"))
+	logrus.Println("token: ", c.PostForm("token"))
+	logrus.Println("operatorID: ", c.PostForm("operatorID"))
+	logrus.Println("appSecret: ", c.PostForm("appSecret"))
+	logrus.Println("gameID: ", c.PostForm("gameID"))
+	logrus.Println("uid: ", c.PostForm("uid"))
+	logrus.Println("amount: ", c.PostForm("amount"))
+	logrus.Println("uid: ", c.PostForm("uid"))
+	logrus.Println("type: ", c.PostForm("type"))
+	logrus.Println("time: ", c.PostForm("time"))
+	logrus.Println("playerID: ", c.PostForm("playerID"))
+	logrus.Println("currency: ", c.PostForm("currency"))
 
 	playerID := c.PostForm("playerID")
 	if playerID == "" && c.PostForm("token") != "" {
