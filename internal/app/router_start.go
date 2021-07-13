@@ -7,20 +7,64 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/noworldwar/single_wallet_api/internal/api"
+	"github.com/sirupsen/logrus"
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"github.com/noworldwar/single_wallet_api/internal/model"
 )
 
+var whiteList []string = []string{
+	"52.77.199.143",
+	"13.251.118.6",
+	"::1",
+}
+
 func InitRouter() {
 	r := gin.Default()
+
 	r.Use(cors.Default())
 
-	r.POST("/validate", api.Validate)
-	r.POST("/balance", api.GetBalance)
-	r.POST("/debit", api.Debit)
-	r.POST("/credit", api.Credit)
+	r.POST("/validate", func(c *gin.Context) {
+		if checkWhiteList(c, whiteList) {
+			api.Validate(c)
+		} else {
+			c.JSON(500, gin.H{"Message": "Permission Denied"})
+			logrus.Errorln("Permission Denied: ", c.ClientIP())
+			return
+		}
+
+	})
+	r.POST("/balance", func(c *gin.Context) {
+		if checkWhiteList(c, whiteList) {
+			api.GetBalance(c)
+		} else {
+			c.JSON(500, gin.H{"Message": "Permission Denied"})
+			logrus.Errorln("Permission Denied: ", c.ClientIP())
+			return
+		}
+
+	})
+	r.POST("/debit", func(c *gin.Context) {
+		if checkWhiteList(c, whiteList) {
+			api.Debit(c)
+		} else {
+			c.JSON(500, gin.H{"Message": "Permission Denied"})
+			logrus.Errorln("Permission Denied: ", c.ClientIP())
+			return
+		}
+
+	})
+	r.POST("/credit", func(c *gin.Context) {
+		if checkWhiteList(c, whiteList) {
+			api.Credit(c)
+		} else {
+			c.JSON(500, gin.H{"Message": "Permission Denied"})
+			logrus.Errorln("Permission Denied: ", c.ClientIP())
+			return
+		}
+
+	})
 
 	model.WGServer = http.Server{Addr: ":7901", Handler: r}
 }
@@ -45,4 +89,14 @@ func loadTemplates() multitemplate.Renderer {
 	}
 
 	return r
+}
+
+func checkWhiteList(c *gin.Context, whiteList []string) bool {
+	isLegalIp := false
+	for _, v := range whiteList {
+		if v == c.ClientIP() {
+			isLegalIp = true
+		}
+	}
+	return isLegalIp == true
 }
