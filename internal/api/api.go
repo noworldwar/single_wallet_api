@@ -130,7 +130,7 @@ func Credit(c *gin.Context) {
 	logrus.Println("operatorID: ", c.PostForm("operatorID"))
 	logrus.Println("appSecret: ", c.PostForm("appSecret"))
 	logrus.Println("gameID: ", c.PostForm("gameID"))
-	logrus.Println("uid: ", c.PostForm("uid"))
+	logrus.Println("betID: ", c.PostForm("betID"))
 	logrus.Println("amount: ", c.PostForm("amount"))
 	logrus.Println("type: ", c.PostForm("type"))
 	logrus.Println("time: ", c.PostForm("time"))
