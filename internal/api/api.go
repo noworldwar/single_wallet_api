@@ -67,6 +67,7 @@ func Validate(c *gin.Context) {
 func GetBalance(c *gin.Context) {
 	if c.PostForm("token") == "" {
 		c.JSON(500, gin.H{"message": "Token has expired"})
+		return
 	}
 	logrus.Println("token: ", c.PostForm("token"))
 	logrus.Println("operatorID: ", c.PostForm("operatorID"))
@@ -75,13 +76,11 @@ func GetBalance(c *gin.Context) {
 	// token := c.PostForm("token")
 
 	playerID := c.PostForm("playerID")
-	if playerID == "" && c.PostForm("token") != "" {
-		playerID = c.PostForm("token")
-	}
 
 	player_data, err := model.GetPlayer(playerID)
 	if err != nil || player_data.PlayerID == "" {
 		c.JSON(400, gin.H{"message": "player not found"})
+		return
 	}
 	// player_info := model.GetPlayerInfo(token)
 	// logrus.Println(player_info)
@@ -101,10 +100,12 @@ func Debit(c *gin.Context) {
 	logrus.Println("type: ", c.PostForm("type"))
 	logrus.Println("time: ", c.PostForm("time"))
 
-	playerID := c.PostForm("playerID")
-	if playerID == "" && c.PostForm("token") != "" {
-		playerID = c.PostForm("token")
+	if c.PostForm("token") == "" {
+		c.JSON(500, gin.H{"message": "Token has expired"})
+		return
 	}
+
+	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
@@ -124,6 +125,7 @@ func Debit(c *gin.Context) {
 	err := model.AddTransfer(transfer)
 	if err != nil {
 		c.JSON(500, gin.H{"message": "Internal Server Error"})
+		return
 	}
 	balance, _ := model.UpdateBalance(playerID, -amount_float)
 
@@ -142,10 +144,12 @@ func Credit(c *gin.Context) {
 	logrus.Println("playerID: ", c.PostForm("playerID"))
 	logrus.Println("currency: ", c.PostForm("currency"))
 
-	playerID := c.PostForm("playerID")
-	if playerID == "" && c.PostForm("token") != "" {
-		playerID = c.PostForm("token")
+	if c.PostForm("token") == "" {
+		c.JSON(500, gin.H{"message": "Token has expired"})
+		return
 	}
+
+	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
@@ -164,6 +168,7 @@ func Credit(c *gin.Context) {
 	err := model.AddTransfer(transfer)
 	if err != nil {
 		c.JSON(500, gin.H{"message": "Internal Server Error"})
+		return
 	}
 	balance, _ := model.UpdateBalance(playerID, amount_float)
 
