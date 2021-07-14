@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/noworldwar/single_wallet_api/internal/api"
-	"github.com/sirupsen/logrus"
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
@@ -17,7 +16,6 @@ import (
 var whiteList []string = []string{
 	"52.77.199.143",
 	"13.251.118.6",
-	"::1",
 }
 
 func InitRouter() {
@@ -25,46 +23,10 @@ func InitRouter() {
 
 	r.Use(cors.Default())
 
-	r.POST("/validate", func(c *gin.Context) {
-		if checkWhiteList(c, whiteList) {
-			api.Validate(c)
-		} else {
-			c.JSON(500, gin.H{"Message": "Permission Denied"})
-			logrus.Errorln("Permission Denied: ", c.ClientIP())
-			return
-		}
-
-	})
-	r.POST("/balance", func(c *gin.Context) {
-		if checkWhiteList(c, whiteList) {
-			api.GetBalance(c)
-		} else {
-			c.JSON(500, gin.H{"Message": "Permission Denied"})
-			logrus.Errorln("Permission Denied: ", c.ClientIP())
-			return
-		}
-
-	})
-	r.POST("/debit", func(c *gin.Context) {
-		if checkWhiteList(c, whiteList) {
-			api.Debit(c)
-		} else {
-			c.JSON(500, gin.H{"Message": "Permission Denied"})
-			logrus.Errorln("Permission Denied: ", c.ClientIP())
-			return
-		}
-
-	})
-	r.POST("/credit", func(c *gin.Context) {
-		if checkWhiteList(c, whiteList) {
-			api.Credit(c)
-		} else {
-			c.JSON(500, gin.H{"Message": "Permission Denied"})
-			logrus.Errorln("Permission Denied: ", c.ClientIP())
-			return
-		}
-
-	})
+	r.POST("/validate", checkWhiteList, api.Validate)
+	r.POST("/balance", checkWhiteList, api.GetBalance)
+	r.POST("/debit", checkWhiteList, api.Debit)
+	r.POST("/credit", checkWhiteList, api.Credit)
 
 	model.WGServer = http.Server{Addr: ":7901", Handler: r}
 }
@@ -91,12 +53,16 @@ func loadTemplates() multitemplate.Renderer {
 	return r
 }
 
-func checkWhiteList(c *gin.Context, whiteList []string) bool {
+func checkWhiteList(c *gin.Context) {
 	isLegalIp := false
 	for _, v := range whiteList {
 		if v == c.ClientIP() {
 			isLegalIp = true
 		}
 	}
-	return isLegalIp == true
+	if !isLegalIp {
+		c.JSON(500, gin.H{"Message": "Permission Denied"})
+		c.Abort()
+	}
+	c.Next()
 }
