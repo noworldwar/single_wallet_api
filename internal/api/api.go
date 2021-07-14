@@ -19,7 +19,7 @@ func Validate(c *gin.Context) {
 	var player_data model.Player
 	var err error
 
-	// if playerID != "" && c.PostForm("token") == "" {
+	// if playerID != "" && c.PostForm("token") !== "" {
 	// 	player_data, err = model.GetPlayer(playerID)
 	// 	if err != nil {
 	// 		c.JSON(400, gin.H{"message": "player not found"})
@@ -65,6 +65,9 @@ func Validate(c *gin.Context) {
 }
 
 func GetBalance(c *gin.Context) {
+	if c.PostForm("token") == "" {
+		c.JSON(500, gin.H{"message": "Token has expired"})
+	}
 	logrus.Println("token: ", c.PostForm("token"))
 	logrus.Println("operatorID: ", c.PostForm("operatorID"))
 	logrus.Println("appSecret: ", c.PostForm("appSecret"))
@@ -111,6 +114,8 @@ func Debit(c *gin.Context) {
 		TransferID: refID,
 		PlayerID:   playerID,
 		Type:       "Debit",
+		BetID:      c.PostForm("betID"),
+		GameID:     c.PostForm("gameID"),
 		Amount:     amount_float,
 		Success:    true,
 		Created:    time.Now().Unix(),
@@ -149,6 +154,8 @@ func Credit(c *gin.Context) {
 	transfer := model.Transfer{TransferID: refID,
 		PlayerID: playerID,
 		Type:     "Credit",
+		BetID:    c.PostForm("betID"),
+		GameID:   c.PostForm("gameID"),
 		Amount:   amount_float,
 		Success:  true,
 		Created:  time.Now().Unix(),
