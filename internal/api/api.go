@@ -15,6 +15,11 @@ func Validate(c *gin.Context) {
 	logrus.Println("token: ", c.PostForm("token"))
 	logrus.Println("operatorID: ", c.PostForm("operatorID"))
 	logrus.Println("appSecret: ", c.PostForm("appSecret"))
+
+	if missing := utils.CheckPostFormData(c, "token", "operatorID", "appSecret"); missing != "" {
+		utils.ErrorResponse(c, 400, "Missing parameter: "+missing, nil)
+		return
+	}
 	playerID := c.PostForm("playerID")
 	var player_data model.Player
 	var err error
@@ -49,9 +54,6 @@ func Validate(c *gin.Context) {
 	// 	return
 	// }
 
-	if playerID == "" && c.PostForm("token") != "" {
-		playerID = c.PostForm("token")
-	}
 	player_data, err = model.GetPlayer(playerID)
 
 	if err != nil || player_data.PlayerID == "" {
@@ -65,15 +67,14 @@ func Validate(c *gin.Context) {
 }
 
 func GetBalance(c *gin.Context) {
-	if c.PostForm("token") == "" {
-		c.JSON(500, gin.H{"message": "Token has expired"})
-		return
-	}
 	logrus.Println("token: ", c.PostForm("token"))
 	logrus.Println("operatorID: ", c.PostForm("operatorID"))
 	logrus.Println("appSecret: ", c.PostForm("appSecret"))
 	logrus.Println("playerID: ", c.PostForm("playerID"))
-	// token := c.PostForm("token")
+	if missing := utils.CheckPostFormData(c, "token", "operatorID", "appSecret", "playerID"); missing != "" {
+		utils.ErrorResponse(c, 400, "Missing parameter: "+missing, nil)
+		return
+	}
 
 	playerID := c.PostForm("playerID")
 
@@ -100,8 +101,8 @@ func Debit(c *gin.Context) {
 	logrus.Println("type: ", c.PostForm("type"))
 	logrus.Println("time: ", c.PostForm("time"))
 
-	if c.PostForm("token") == "" {
-		c.JSON(500, gin.H{"message": "Token has expired"})
+	if missing := utils.CheckPostFormData(c, "token", "operatorID", "appSecret", "playerID", "amount", "currency", "gameID", "betID", "type", "time"); missing != "" {
+		utils.ErrorResponse(c, 400, "Missing parameter: "+missing, nil)
 		return
 	}
 
@@ -145,7 +146,7 @@ func Credit(c *gin.Context) {
 	logrus.Println("currency: ", c.PostForm("currency"))
 
 	if c.PostForm("token") == "" {
-		c.JSON(500, gin.H{"message": "Token has expired"})
+		c.JSON(404, gin.H{"message": "Token has expired"})
 		return
 	}
 
