@@ -144,11 +144,6 @@ func Credit(c *gin.Context) {
 	logrus.Println("playerID: ", c.PostForm("playerID"))
 	logrus.Println("currency: ", c.PostForm("currency"))
 
-	if c.PostForm("token") == "" {
-		c.JSON(404, gin.H{"message": "Token has expired"})
-		return
-	}
-
 	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
 	amount_float, _ := strconv.ParseFloat(amount, 64)
