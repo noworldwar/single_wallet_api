@@ -69,11 +69,6 @@ func GetBalance(c *gin.Context) {
 	logrus.Println("operatorID: ", c.PostForm("operatorID"))
 	logrus.Println("appSecret: ", c.PostForm("appSecret"))
 	logrus.Println("playerID: ", c.PostForm("playerID"))
-	if c.PostForm("token") == "" {
-		c.JSON(404, gin.H{"message": "Token has expired"})
-		return
-	}
-	// token := c.PostForm("token")
 
 	playerID := c.PostForm("playerID")
 
