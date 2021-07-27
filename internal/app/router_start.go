@@ -16,6 +16,7 @@ import (
 var whiteList []string = []string{
 	"52.77.199.143",
 	"13.251.118.6",
+	"::1",
 }
 
 func InitRouter() {
@@ -23,10 +24,12 @@ func InitRouter() {
 
 	r.Use(cors.Default())
 
-	r.POST("/validate", checkWhiteList, api.Validate)
-	r.POST("/balance", checkWhiteList, api.GetBalance)
-	r.POST("/debit", checkWhiteList, api.Debit)
-	r.POST("/credit", checkWhiteList, api.Credit)
+	group := r.Group("/api")
+
+	group.POST("/validate", checkWhiteList, api.Validate)
+	group.POST("/balance", checkWhiteList, api.GetBalance)
+	group.POST("/debit", checkWhiteList, api.Debit)
+	group.POST("/credit", checkWhiteList, api.Credit)
 
 	model.WGServer = http.Server{Addr: ":7901", Handler: r}
 }

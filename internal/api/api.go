@@ -105,6 +105,11 @@ func Debit(c *gin.Context) {
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
 
+	isExist, _ := model.CheckIfTransferExist(c.PostForm("betID"))
+	if isExist {
+		c.JSON(409, gin.H{"message": "Duplicate transaction"})
+		return
+	}
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.Transfer{
 		TransferID: refID,
