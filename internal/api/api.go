@@ -8,13 +8,10 @@ import (
 	"github.com/noworldwar/single_wallet_api/internal/model"
 	"github.com/noworldwar/single_wallet_api/internal/pkg/utils"
 	"github.com/rs/xid"
-	logrus "github.com/sirupsen/logrus"
 )
 
 func Validate(c *gin.Context) {
-	logrus.Println("token: ", c.PostForm("token"))
-	logrus.Println("operatorID: ", c.PostForm("operatorID"))
-	logrus.Println("appSecret: ", c.PostForm("appSecret"))
+
 	playerID := c.PostForm("playerID")
 	var player_data model.Player
 	var err error
@@ -55,7 +52,7 @@ func Validate(c *gin.Context) {
 	player_data, err = model.GetPlayer(playerID)
 
 	if err != nil || player_data.PlayerID == "" {
-		c.JSON(400, gin.H{"message": "player not found"})
+		utils.ErrorResponse(c, 400, "Player not found: ", err)
 		return
 	}
 
@@ -65,16 +62,12 @@ func Validate(c *gin.Context) {
 }
 
 func GetBalance(c *gin.Context) {
-	logrus.Println("token: ", c.PostForm("token"))
-	logrus.Println("operatorID: ", c.PostForm("operatorID"))
-	logrus.Println("appSecret: ", c.PostForm("appSecret"))
-	logrus.Println("playerID: ", c.PostForm("playerID"))
 
 	playerID := c.PostForm("playerID")
 
 	player_data, err := model.GetPlayer(playerID)
 	if err != nil || player_data.PlayerID == "" {
-		c.JSON(400, gin.H{"message": "player not found"})
+		utils.ErrorResponse(c, 400, "Player not found: ", err)
 		return
 	}
 	// player_info := model.GetPlayerInfo(token)
@@ -83,17 +76,6 @@ func GetBalance(c *gin.Context) {
 }
 
 func Debit(c *gin.Context) {
-	logrus.Println("amount: ", c.PostForm("amount"))
-	logrus.Println("playerID: ", c.PostForm("playerID"))
-	logrus.Println("currency: ", c.PostForm("currency"))
-	logrus.Println("token: ", c.PostForm("token"))
-	logrus.Println("operatorID: ", c.PostForm("operatorID"))
-	logrus.Println("appSecret: ", c.PostForm("appSecret"))
-	logrus.Println("gameID: ", c.PostForm("gameID"))
-	logrus.Println("betID: ", c.PostForm("betID"))
-	logrus.Println("amount: ", c.PostForm("amount"))
-	logrus.Println("type: ", c.PostForm("type"))
-	logrus.Println("time: ", c.PostForm("time"))
 
 	if c.PostForm("token") == "" {
 		c.JSON(404, gin.H{"message": "Token has expired"})
@@ -105,9 +87,9 @@ func Debit(c *gin.Context) {
 	amount_float, _ := strconv.ParseFloat(amount, 64)
 	currency := c.PostForm("currency")
 
-	isExist, _ := model.CheckIfTransferExist(c.PostForm("betID"))
+	isExist, err := model.CheckIfTransferExist(c.PostForm("betID"))
 	if isExist {
-		c.JSON(409, gin.H{"message": "Duplicate transaction"})
+		utils.ErrorResponse(c, 409, "Duplicate transaction: ", err)
 		return
 	}
 	refID := time.Now().Format("20060102") + xid.New().String()
@@ -122,9 +104,9 @@ func Debit(c *gin.Context) {
 		Created:    time.Now().Unix(),
 		Updated:    time.Now().Unix(),
 	}
-	err := model.AddTransfer(transfer)
-	if err != nil {
-		c.JSON(500, gin.H{"message": "Internal Server Error"})
+	AddErr := model.AddTransfer(transfer)
+	if AddErr != nil {
+		utils.ErrorResponse(c, 500, "Internal Server Error: ", AddErr)
 		return
 	}
 	balance, _ := model.UpdateBalance(playerID, -amount_float)
@@ -133,16 +115,6 @@ func Debit(c *gin.Context) {
 }
 
 func Credit(c *gin.Context) {
-	logrus.Println("token: ", c.PostForm("token"))
-	logrus.Println("operatorID: ", c.PostForm("operatorID"))
-	logrus.Println("appSecret: ", c.PostForm("appSecret"))
-	logrus.Println("gameID: ", c.PostForm("gameID"))
-	logrus.Println("betID: ", c.PostForm("betID"))
-	logrus.Println("amount: ", c.PostForm("amount"))
-	logrus.Println("type: ", c.PostForm("type"))
-	logrus.Println("time: ", c.PostForm("time"))
-	logrus.Println("playerID: ", c.PostForm("playerID"))
-	logrus.Println("currency: ", c.PostForm("currency"))
 
 	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
@@ -162,7 +134,7 @@ func Credit(c *gin.Context) {
 	}
 	err := model.AddTransfer(transfer)
 	if err != nil {
-		c.JSON(500, gin.H{"message": "Internal Server Error"})
+		utils.ErrorResponse(c, 500, "Internal Server Error: ", err)
 		return
 	}
 	balance, _ := model.UpdateBalance(playerID, amount_float)

@@ -23,6 +23,8 @@ func InitRouter() {
 	r := gin.Default()
 
 	r.Use(cors.Default())
+	r.Use(Logger())
+	r.Use(gin.Recovery())
 
 	group := r.Group("/api")
 
