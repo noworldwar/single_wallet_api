@@ -57,15 +57,15 @@ func loadTemplates() multitemplate.Renderer {
 }
 
 func checkWhiteList(c *gin.Context) {
-	isLegalIp := false
-	for _, v := range whiteList {
-		if v == c.ClientIP() {
-			isLegalIp = true
-		}
-	}
-	if !isLegalIp {
-		c.JSON(500, gin.H{"Message": "Permission Denied"})
-		c.Abort()
-	}
+	// isLegalIp := false
+	// for _, v := range whiteList {
+	// 	if v == c.ClientIP() {
+	// 		isLegalIp = true
+	// 	}
+	// }
+	// if !isLegalIp {
+	// 	c.JSON(500, gin.H{"Message": "Permission Denied"})
+	// 	c.Abort()
+	// }
 	c.Next()
 }
