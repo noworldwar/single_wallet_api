@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -12,49 +13,27 @@ import (
 
 func Validate(c *gin.Context) {
 
-	playerID := c.PostForm("playerID")
 	var player_data model.Player
 	var err error
 
-	// if playerID != "" && c.PostForm("token") !== "" {
-	// 	player_data, err = model.GetPlayer(playerID)
-	// 	if err != nil {
-	// 		c.JSON(400, gin.H{"message": "player not found"})
-	// 		return
-	// 	}
-
-	// 	if player_data.PlayerID == "" {
-	// 		c.JSON(400, gin.H{"message": "player not found"})
-	// 		return
-	// 	}
-	// 	token := model.SetPlayerInfo(player_data)
-	// 	c.JSON(200, gin.H{"token": token})
-	// 	return
-	// }
-
-	// if c.PostForm("token") != "" {
-	// 	player_info := model.GetPlayerInfo(c.PostForm("token"))
-	// 	player_data, err = model.GetPlayer(player_info.PlayerID)
-	// 	if err != nil || player_data.PlayerID == "" {
-	// 		c.JSON(400, gin.H{"message": "player not found"})
-	// 		return
-	// 	}
-	// 	c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
-	// 	return
-	// } else if playerID == "" && c.PostForm("token") == "" {
-	// 	c.JSON(400, gin.H{"message": "Missing parameter"})
-	// 	return
-	// }
-
-	if playerID == "" && c.PostForm("token") != "" {
-		playerID = c.PostForm("token")
-	}
-	player_data, err = model.GetPlayer(playerID)
-
+	player_info := model.GetPlayerInfo(c.PostForm("token"))
+	fmt.Println(player_info)
+	player_data, err = model.GetPlayer(player_info.PlayerID)
 	if err != nil || player_data.PlayerID == "" {
 		utils.ErrorResponse(c, 400, "Player not found: ", err)
 		return
 	}
+	c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
+
+	// if playerID == "" && c.PostForm("token") != "" {
+	// 	playerID = c.PostForm("token")
+	// }
+	// player_data, err = model.GetPlayer(playerID)
+
+	// if err != nil || player_data.PlayerID == "" {
+	// 	utils.ErrorResponse(c, 400, "Player not found: ", err)
+	// 	return
+	// }
 
 	c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
 
