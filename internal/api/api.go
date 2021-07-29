@@ -64,8 +64,8 @@ func Debit(c *gin.Context) {
 		GameID:     c.PostForm("gameID"),
 		Amount:     amount_int,
 		Success:    true,
-		Created:    time.Now(),
-		Updated:    time.Now(),
+		Created:    time.Now().Unix(),
+		Updated:    time.Now().Unix(),
 	}
 	AddErr := model.AddTransfer(transfer)
 	if AddErr != nil {
@@ -92,8 +92,8 @@ func Credit(c *gin.Context) {
 		GameID:   c.PostForm("gameID"),
 		Amount:   amount_int,
 		Success:  true,
-		Created:  time.Now(),
-		Updated:  time.Now(),
+		Created:  time.Now().Unix(),
+		Updated:  time.Now().Unix(),
 	}
 	err := model.AddTransfer(transfer)
 	if err != nil {
