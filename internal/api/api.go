@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -17,7 +16,6 @@ func Validate(c *gin.Context) {
 	var err error
 
 	player_info := model.GetPlayerInfo(c.PostForm("token"))
-	fmt.Println(player_info)
 	player_data, err = model.GetPlayer(player_info.PlayerID)
 	if err != nil || player_data.PlayerID == "" {
 		utils.ErrorResponse(c, 400, "Player not found: ", err)
@@ -35,16 +33,14 @@ func Validate(c *gin.Context) {
 	// 	return
 	// }
 
-	c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
-
 	// c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
 }
 
 func GetBalance(c *gin.Context) {
 
-	playerID := c.PostForm("playerID")
+	player_info := model.GetPlayerInfo(c.PostForm("token"))
 
-	player_data, err := model.GetPlayer(playerID)
+	player_data, err := model.GetPlayer(player_info.PlayerID)
 	if err != nil || player_data.PlayerID == "" {
 		utils.ErrorResponse(c, 400, "Player not found: ", err)
 		return
