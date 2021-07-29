@@ -1,8 +1,9 @@
 package model
 
 type Wallet struct {
-	Balance float64 `json:"balance"`
-	Success bool    `json:"success"`
+	Bank    string `json:"bank"`
+	Balance int64  `json:"balance"`
+	Success bool   `json:"success"`
 }
 
 func UpdateBalance(playerID string, amount int64) (int64, error) {
