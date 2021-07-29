@@ -22,18 +22,6 @@ func Validate(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
-
-	// if playerID == "" && c.PostForm("token") != "" {
-	// 	playerID = c.PostForm("token")
-	// }
-	// player_data, err = model.GetPlayer(playerID)
-
-	// if err != nil || player_data.PlayerID == "" {
-	// 	utils.ErrorResponse(c, 400, "Player not found: ", err)
-	// 	return
-	// }
-
-	// c.JSON(200, gin.H{"playerID": player_data.PlayerID, "nickname": player_data.Nickname, "currency": player_data.Currency, "test": utils.IntToBool(player_data.Test), "time": player_data.Created})
 }
 
 func GetBalance(c *gin.Context) {
@@ -59,7 +47,7 @@ func Debit(c *gin.Context) {
 
 	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
-	amount_float, _ := strconv.ParseFloat(amount, 64)
+	amount_int, _ := strconv.ParseInt(amount, 10, 64)
 	currency := c.PostForm("currency")
 
 	isExist, err := model.CheckIfTransferExist(c.PostForm("betID"))
@@ -68,13 +56,13 @@ func Debit(c *gin.Context) {
 		return
 	}
 	refID := time.Now().Format("20060102") + xid.New().String()
-	transfer := model.Transfer{
+	transfer := model.BetTransfer{
 		TransferID: refID,
 		PlayerID:   playerID,
 		Type:       "Debit",
 		BetID:      c.PostForm("betID"),
 		GameID:     c.PostForm("gameID"),
-		Amount:     amount_float,
+		Amount:     amount_int,
 		Success:    true,
 		Created:    time.Now().Unix(),
 		Updated:    time.Now().Unix(),
@@ -84,7 +72,7 @@ func Debit(c *gin.Context) {
 		utils.ErrorResponse(c, 500, "Internal Server Error: ", AddErr)
 		return
 	}
-	balance, _ := model.UpdateBalance(playerID, -amount_float)
+	balance, _ := model.UpdateBalance(playerID, -amount_int)
 
 	c.JSON(200, gin.H{"balance": balance, "currency": currency, "time": time.Now().Unix(), "refID": refID})
 }
@@ -93,16 +81,16 @@ func Credit(c *gin.Context) {
 
 	playerID := c.PostForm("playerID")
 	amount := c.PostForm("amount")
-	amount_float, _ := strconv.ParseFloat(amount, 64)
+	amount_int, _ := strconv.ParseInt(amount, 10, 64)
 	currency := c.PostForm("currency")
 
 	refID := time.Now().Format("20060102") + xid.New().String()
-	transfer := model.Transfer{TransferID: refID,
+	transfer := model.BetTransfer{TransferID: refID,
 		PlayerID: playerID,
 		Type:     "Credit",
 		BetID:    c.PostForm("betID"),
 		GameID:   c.PostForm("gameID"),
-		Amount:   amount_float,
+		Amount:   amount_int,
 		Success:  true,
 		Created:  time.Now().Unix(),
 		Updated:  time.Now().Unix(),
@@ -112,7 +100,7 @@ func Credit(c *gin.Context) {
 		utils.ErrorResponse(c, 500, "Internal Server Error: ", err)
 		return
 	}
-	balance, _ := model.UpdateBalance(playerID, amount_float)
+	balance, _ := model.UpdateBalance(playerID, amount_int)
 
 	c.JSON(200, gin.H{"balance": balance, "currency": currency, "time": time.Now().Unix(), "refID": refID})
 }
