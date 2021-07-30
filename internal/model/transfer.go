@@ -12,10 +12,10 @@ type BetTransfer struct {
 	Updated    int64  `xorm:"bigint"`
 }
 
-func CheckIfTransferExist(betID string) (bool, error) {
+func CheckIfTransferExist(betID, apitype string) (bool, error) {
 	session := MyDB.NewSession()
 	defer session.Close()
-	return session.Where("BetID=?", betID).Exist(&BetTransfer{})
+	return session.Where("BetID=? and Type=", betID, apitype).Exist(&BetTransfer{})
 }
 
 func GetTransferBy(playerID string) (m []BetTransfer, err error) {
