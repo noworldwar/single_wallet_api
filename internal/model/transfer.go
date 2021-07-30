@@ -15,7 +15,7 @@ type BetTransfer struct {
 func CheckIfTransferExist(betID, apitype string) (bool, error) {
 	session := MyDB.NewSession()
 	defer session.Close()
-	return session.Where("BetID=? and Type=", betID, apitype).Exist(&BetTransfer{})
+	return session.Exist(&BetTransfer{BetID: betID, Type: apitype})
 }
 
 func GetTransferBy(playerID string) (m []BetTransfer, err error) {
