@@ -32,6 +32,7 @@ func InitRouter() {
 	group.POST("/balance", checkWhiteList, api.GetBalance)
 	group.POST("/debit", checkWhiteList, api.Debit)
 	group.POST("/credit", checkWhiteList, api.Credit)
+	group.POST("/rollback", checkWhiteList, api.Rollback)
 
 	model.WGServer = http.Server{Addr: ":7901", Handler: r}
 }

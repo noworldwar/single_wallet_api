@@ -7,6 +7,8 @@ type BetTransfer struct {
 	BetID      string `json:"betID"   xorm:"varchar(64) notnull"`
 	GameID     string `json:"gameID"   xorm:"varchar(64) notnull"`
 	Amount     int64  `json:"amount" xorm:"float notnull" `
+	WeType     string `json:"wetype"   xorm:"varchar(20) notnull"`
+	WeTime     string `json:"wetime"   xorm:"bigint"`
 	Success    bool   `json:"success" xorm:"tinyint(1) notnull"`
 	Created    int64  `xorm:"bigint"`
 	Updated    int64  `xorm:"bigint"`
