@@ -2,6 +2,7 @@ package api
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -206,27 +207,33 @@ func Credit(c *gin.Context) {
 	}
 
 	// Step 5: Check Debit Record
-	isPlaced, err := model.CheckIfTransferExist(betID, "Debit")
-	if !isPlaced {
+	debitRecord, err := model.GetTransferByBetID(betID, "Debit")
+	if err != nil || debitRecord.PlayerID == "" {
 		utils.ErrorResponse(c, 500, "Failed to read bet transaction: ", err)
 		return
 	}
 
-	// Step 6: Check Duplicate transaction
+	// Step 6: Check GameID
+	if strings.Trim(debitRecord.GameID, " ") != strings.Trim(gameID, " ") {
+		utils.ErrorResponse(c, 400, "Incorrect gameID: ", err)
+		return
+	}
+
+	// Step 7: Check Transaction Already Paid
 	isExist, err := model.CheckIfTransferExist(betID, "Credit")
 	if isExist {
 		utils.ErrorResponse(c, 409, "Duplicate transaction: betID already paid ", err)
 		return
 	}
 
-	// Step 7: Check Duplicate transaction
+	// Step 8: Check Duplicate Transaction
 	isRollbacked, err := model.CheckIfTransferExist(betID, "Rollback")
 	if isRollbacked {
 		utils.ErrorResponse(c, 409, "Duplicate transaction: betID already rollbacked ", err)
 		return
 	}
 
-	// Step 8: Add Transfer
+	// Step 9: Add Transfer
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.BetTransfer{TransferID: refID,
 		PlayerID: playerID,
@@ -246,7 +253,7 @@ func Credit(c *gin.Context) {
 		return
 	}
 
-	// Step 9: Update Balance
+	// Step 10: Update Balance
 	balance, _ := model.UpdateBalance(playerID, amount_int)
 
 	c.JSON(200, gin.H{"balance": balance, "currency": currency, "time": time.Now().Unix(), "refID": refID})
@@ -283,24 +290,30 @@ func Rollback(c *gin.Context) {
 	}
 
 	// Step 4: Check Debit Record
-	isPlaced, err := model.CheckIfTransferExist(betID, "Debit")
-	if !isPlaced {
+	debitRecord, err := model.GetTransferByBetID(betID, "Debit")
+	if err != nil || debitRecord.PlayerID == "" {
 		utils.ErrorResponse(c, 500, "Failed to read bet transaction: ", err)
 		return
 	}
 
-	// Step 5: Check Duplicate transaction
+	// Step 5: Check GameID
+	if strings.Trim(debitRecord.GameID, " ") != strings.Trim(gameID, " ") {
+		utils.ErrorResponse(c, 400, "Incorrect gameID: ", err)
+		return
+	}
+
+	// Step 6: Check Duplicate transaction
 	isExist, err := model.CheckIfTransferExist(betID, "Rollback")
 	if isExist {
 		utils.ErrorResponse(c, 409, "Duplicate transaction: betID already rollbacked", err)
 		return
 	}
 
-	// Step 6: Check Check If BetID Already Paid
-	isPaid, err := model.CheckIfTransferExist(betID, "Credit")
-	if isPaid {
-		utils.ErrorResponse(c, 409, "Duplicate transaction: betID already paid", err)
-		return
+	// Step 7: Get Credit Amount
+	creditRecord, _ := model.GetTransferByBetID(betID, "Credit")
+	cAmount := int64(0)
+	if debitRecord.PlayerID == playerID && debitRecord.Amount != 0 {
+		cAmount = creditRecord.Amount
 	}
 
 	// Step 7: Add Transfer
@@ -312,7 +325,7 @@ func Rollback(c *gin.Context) {
 		GameID:   gameID,
 		WeType:   we_tran_type,
 		WeTime:   we_time,
-		Amount:   amount_int,
+		Amount:   amount_int - cAmount,
 		Success:  true,
 		Created:  time.Now().Unix(),
 		Updated:  time.Now().Unix(),
@@ -323,7 +336,7 @@ func Rollback(c *gin.Context) {
 		return
 	}
 
-	// Step 9: Update Balance
+	// Step 8: Update Balance
 	balance, _ := model.UpdateBalance(playerID, amount_int)
 
 	c.JSON(200, gin.H{"balance": balance, "currency": currency, "time": time.Now().Unix(), "refID": refID})

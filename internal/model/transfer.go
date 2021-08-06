@@ -20,6 +20,13 @@ func CheckIfTransferExist(betID, apitype string) (bool, error) {
 	return session.Exist(&BetTransfer{BetID: betID, Type: apitype})
 }
 
+func GetTransferByBetID(betID, apitype string) (m BetTransfer, err error) {
+	session := MyDB.NewSession()
+	defer session.Close()
+	_, err = session.Where("BetID=?", betID).Get(&m)
+	return
+}
+
 func GetTransferBy(playerID string) (m []BetTransfer, err error) {
 	session := MyDB.NewSession()
 	defer session.Close()
