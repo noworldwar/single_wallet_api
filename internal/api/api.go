@@ -312,7 +312,7 @@ func Rollback(c *gin.Context) {
 	// Step 7: Get Credit Amount
 	creditRecord, _ := model.GetTransferByBetID(betID, "Credit")
 	cAmount := int64(0)
-	if debitRecord.PlayerID == playerID && debitRecord.Amount != 0 {
+	if creditRecord.PlayerID == playerID && creditRecord.Amount != 0 {
 		cAmount = creditRecord.Amount
 	}
 
@@ -322,7 +322,7 @@ func Rollback(c *gin.Context) {
 		return
 	}
 
-	// Step 7: Add Transfer
+	// Step 8: Add Transfer
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.BetTransfer{TransferID: refID,
 		PlayerID: playerID,
@@ -342,7 +342,7 @@ func Rollback(c *gin.Context) {
 		return
 	}
 
-	// Step 8: Update Balance
+	// Step 9: Update Balance
 	balance, _ := model.UpdateBalance(playerID, amount_int)
 
 	c.JSON(200, gin.H{"balance": balance, "currency": currency, "time": time.Now().Unix(), "refID": refID})
