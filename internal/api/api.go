@@ -316,6 +316,12 @@ func Rollback(c *gin.Context) {
 		cAmount = creditRecord.Amount
 	}
 
+	// Step 7: Check Rollback Amount
+	if amount_int != (debitRecord.Amount - cAmount) {
+		utils.ErrorResponse(c, 400, "Incorrect Rollback Amount: ", err)
+		return
+	}
+
 	// Step 7: Add Transfer
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.BetTransfer{TransferID: refID,
@@ -325,7 +331,7 @@ func Rollback(c *gin.Context) {
 		GameID:   gameID,
 		WeType:   we_tran_type,
 		WeTime:   we_time,
-		Amount:   amount_int - cAmount,
+		Amount:   amount_int,
 		Success:  true,
 		Created:  time.Now().Unix(),
 		Updated:  time.Now().Unix(),
