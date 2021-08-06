@@ -23,7 +23,7 @@ func CheckIfTransferExist(betID, apitype string) (bool, error) {
 func GetTransferByBetID(betID, apitype string) (m BetTransfer, err error) {
 	session := MyDB.NewSession()
 	defer session.Close()
-	_, err = session.Where("BetID=?", betID).Get(&m)
+	_, err = session.Where("bet_id = ?", betID).Get(&m)
 	return
 }
 
