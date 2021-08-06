@@ -315,7 +315,7 @@ func Rollback(c *gin.Context) {
 
 	fmt.Println("amount_int: ", amount_int)
 	fmt.Println("debitRecord.Amount: ", debitRecord.Amount)
-	fmt.Println("creditRecord.Amount", creditRecord.Amount)
+	fmt.Println("creditRecord.Amount: ", creditRecord.Amount)
 	// Step 7: Check Rollback Amount
 	if amount_int != (debitRecord.Amount - creditRecord.Amount) {
 		utils.ErrorResponse(c, 400, "Incorrect Rollback Amount: ", err)
