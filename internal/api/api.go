@@ -253,7 +253,6 @@ func Credit(c *gin.Context) {
 }
 
 func Rollback(c *gin.Context) {
-	token := c.PostForm("token")
 	operatorID := c.PostForm("operatorID")
 	appSecret := c.PostForm("appSecret")
 	playerID := c.PostForm("playerID")
@@ -276,48 +275,35 @@ func Rollback(c *gin.Context) {
 		return
 	}
 
-	// Step 3: Check Token
-	if token != "" {
-		player_info := model.GetPlayerInfo(token)
-		player_data, err := model.GetPlayer(player_info.PlayerID)
-		if err != nil || player_data.PlayerID == "" {
-			utils.ErrorResponse(c, 404, "Token has expired", err)
-			return
-		} else if player_data.PlayerID != playerID {
-			utils.ErrorResponse(c, 400, "Incorrect playerID", nil)
-			return
-		}
-	}
-
-	// Step 4: Check Amount
+	// Step 3: Check Amount
 	amount_int, err := strconv.ParseInt(amount, 10, 64)
 	if err != nil {
 		utils.ErrorResponse(c, 400, "Incorrect amount format:"+amount, err)
 		return
 	}
 
-	// Step 5: Check Debit Record
+	// Step 4: Check Debit Record
 	isPlaced, err := model.CheckIfTransferExist(betID, "Debit")
 	if !isPlaced {
 		utils.ErrorResponse(c, 500, "Failed to read bet transaction: ", err)
 		return
 	}
 
-	// Step 6: Check Duplicate transaction
+	// Step 5: Check Duplicate transaction
 	isExist, err := model.CheckIfTransferExist(betID, "Rollback")
 	if isExist {
 		utils.ErrorResponse(c, 409, "Duplicate transaction: betID already rollbacked", err)
 		return
 	}
 
-	// Step 7: Check Check If BetID Already Paid
+	// Step 6: Check Check If BetID Already Paid
 	isPaid, err := model.CheckIfTransferExist(betID, "Credit")
 	if isPaid {
 		utils.ErrorResponse(c, 409, "Duplicate transaction: betID already paid", err)
 		return
 	}
 
-	// Step 8: Add Transfer
+	// Step 7: Add Transfer
 	refID := time.Now().Format("20060102") + xid.New().String()
 	transfer := model.BetTransfer{TransferID: refID,
 		PlayerID: playerID,
