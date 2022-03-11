@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
@@ -11,6 +11,20 @@ import (
 	"github.com/noworldwar/single_wallet_api/internal/pkg/utils"
 	"github.com/rs/xid"
 )
+
+type creditDatail struct {
+	OperatorID string `json:"operatorID"`
+	AppSecret  string `json:"appSecret"`
+	PlayerID   string `json:"playerID"`
+	GameID     string `json:"gameID"`
+	BetID      string `json:"betID"`
+	Amount     string `json:"amount"`
+	GameStatus string `json:"gameStatus"`
+	GameResult string `json:"gameResult"`
+	Currency   string `json:"currency"`
+	Type       string `json:"type"`
+	Time       string `json:"time"`
+}
 
 func Validate(c *gin.Context) {
 	token := c.PostForm("token")
@@ -159,105 +173,105 @@ func Debit(c *gin.Context) {
 
 func Credit(c *gin.Context) {
 	token := c.PostForm("token")
-	operatorID := c.PostForm("operatorID")
-	appSecret := c.PostForm("appSecret")
-	playerID := c.PostForm("playerID")
-	gameID := c.PostForm("gameID")
-	betID := c.PostForm("betID")
-	amount := c.PostForm("amount")
-	currency := c.PostForm("currency")
-	we_tran_type := c.PostForm("type")
-	we_time := c.PostForm("time")
+	refID := ""
+	// Step 1: Unmarshal The JSON Data
+	data := c.PostForm("data")
+	balance := int64(0)
+	creditDatail := []creditDatail{}
 
-	// Step 1: Check the required parameters
-	if k := utils.HasPostFormEmpty(c, "amount", "appSecret", "betID", "operatorID", "playerID", "gameID", "time", "type"); k != "" {
-		utils.ErrorResponse(c, 400, "Missing parameter:"+k, nil)
-		return
+	err := json.Unmarshal([]byte(data), &creditDatail)
+	if err != nil {
+		utils.ErrorResponse(c, 400, "JSON format failed: "+err.Error(), nil)
 	}
 
-	// Step 2: Check AppSecret
-	if utils.CheckAppSecret(operatorID, appSecret) {
-		utils.ErrorResponse(c, 401, "Incorrect appSecret", nil)
-		return
-	}
+	// Step 2: Read Credit Detail Data
+	for _, v := range creditDatail {
 
-	// Step 3: Check Token
-	if token != "" {
-		player_info := model.GetPlayerInfo(token)
-		player_data, err := model.GetPlayer(player_info.PlayerID)
-		if err != nil || player_data.PlayerID == "" {
-			utils.ErrorResponse(c, 404, "Token has expired", err)
-			return
-		} else if player_data.PlayerID != playerID {
-			utils.ErrorResponse(c, 400, "Incorrect playerID", nil)
+		// Step 2.1: Check AppSecret
+		if utils.CheckAppSecret(v.OperatorID, v.AppSecret) {
+			utils.ErrorResponse(c, 401, "Incorrect appSecret: operatorID:"+v.OperatorID, nil)
 			return
 		}
-	} else {
-		player_data, err := model.GetPlayer(playerID)
-		if err != nil || player_data.PlayerID == "" {
-			utils.ErrorResponse(c, 400, "Incorrect playerID", nil)
+
+		// Step 2.2: Check Token
+		if token != "" {
+			player_info := model.GetPlayerInfo(token)
+			player_data, err := model.GetPlayer(player_info.PlayerID)
+			if err != nil || player_data.PlayerID == "" {
+				utils.ErrorResponse(c, 404, "Token has expired", err)
+				return
+			} else if player_data.PlayerID != v.PlayerID {
+				utils.ErrorResponse(c, 400, "Incorrect playerID: playerID:"+v.PlayerID, nil)
+				return
+			}
+		} else {
+			player_data, err := model.GetPlayer(v.PlayerID)
+			if err != nil || player_data.PlayerID == "" {
+				utils.ErrorResponse(c, 400, "Incorrect playerID: playerID:"+v.PlayerID, nil)
+				return
+			}
+		}
+
+		// Step 2.3: Check Amount
+		amount_int, err := strconv.ParseInt(v.Amount, 10, 64)
+		if err != nil {
+			utils.ErrorResponse(c, 400, "Incorrect amount format: "+v.Amount, err)
 			return
 		}
+
+		// Step 2.4: Check Debit Record
+		debitRecord, err := model.GetTransferByBetID(v.BetID, "Debit")
+		if err != nil || debitRecord.PlayerID == "" {
+			utils.ErrorResponse(c, 400, "Failed to read bet transaction: ", err)
+			return
+		}
+
+		// Step 2.5: Check GameID
+		if strings.Trim(debitRecord.GameID, " ") != strings.Trim(v.GameID, " ") {
+			utils.ErrorResponse(c, 400, "Incorrect gameID: ", err)
+			return
+		}
+
+		// Step 2.6: Check Transaction Already Paid
+		isExist, err := model.CheckIfTransferExist(v.BetID, "Credit")
+		if isExist {
+			utils.ErrorResponse(c, 409, "Duplicate transaction: betID already paid ", err)
+			return
+		}
+
+		// Step 2.7: Check Duplicate Transaction
+		isRollbacked, err := model.CheckIfTransferExist(v.BetID, "Rollback")
+		if isRollbacked {
+			utils.ErrorResponse(c, 409, "Duplicate transaction: betID already rollbacked ", err)
+			return
+		}
+
+		// Step 9: Add Transfer
+		refID = time.Now().Format("20060102") + xid.New().String()
+		transfer := model.BetTransfer{TransferID: refID,
+			PlayerID: v.PlayerID,
+			Type:     "Credit",
+			BetID:    v.BetID,
+			GameID:   v.GameID,
+			WeType:   v.Type,
+			WeTime:   v.Time,
+			Amount:   amount_int,
+			Success:  true,
+			Created:  time.Now().Unix(),
+			Updated:  time.Now().Unix(),
+		}
+		err = model.AddTransfer(transfer)
+		if err != nil {
+			utils.ErrorResponse(c, 500, "Internal Server Error: ", err)
+			return
+		}
+
+		// Step 10: Update Balance
+		balance, _ = model.UpdateBalance(v.PlayerID, amount_int)
+
 	}
 
-	// Step 4: Check Amount
-	amount_int, err := strconv.ParseInt(amount, 10, 64)
-	if err != nil {
-		utils.ErrorResponse(c, 400, "Incorrect amount format: "+amount, err)
-		return
-	}
-
-	// Step 5: Check Debit Record
-	debitRecord, err := model.GetTransferByBetID(betID, "Debit")
-	if err != nil || debitRecord.PlayerID == "" {
-		utils.ErrorResponse(c, 500, "Failed to read bet transaction: ", err)
-		return
-	}
-
-	// Step 6: Check GameID
-	if strings.Trim(debitRecord.GameID, " ") != strings.Trim(gameID, " ") {
-		utils.ErrorResponse(c, 400, "Incorrect gameID: ", err)
-		return
-	}
-
-	// Step 7: Check Transaction Already Paid
-	isExist, err := model.CheckIfTransferExist(betID, "Credit")
-	if isExist {
-		utils.ErrorResponse(c, 409, "Duplicate transaction: betID already paid ", err)
-		return
-	}
-
-	// Step 8: Check Duplicate Transaction
-	isRollbacked, err := model.CheckIfTransferExist(betID, "Rollback")
-	if isRollbacked {
-		utils.ErrorResponse(c, 409, "Duplicate transaction: betID already rollbacked ", err)
-		return
-	}
-
-	// Step 9: Add Transfer
-	refID := time.Now().Format("20060102") + xid.New().String()
-	transfer := model.BetTransfer{TransferID: refID,
-		PlayerID: playerID,
-		Type:     "Credit",
-		BetID:    betID,
-		GameID:   gameID,
-		WeType:   we_tran_type,
-		WeTime:   we_time,
-		Amount:   amount_int,
-		Success:  true,
-		Created:  time.Now().Unix(),
-		Updated:  time.Now().Unix(),
-	}
-	err = model.AddTransfer(transfer)
-	if err != nil {
-		utils.ErrorResponse(c, 500, "Internal Server Error: ", err)
-		return
-	}
-
-	// Step 10: Update Balance
-	balance, _ := model.UpdateBalance(playerID, amount_int)
-
-	c.JSON(200, gin.H{"balance": balance, "currency": currency, "time": time.Now().Unix(), "refID": refID})
+	c.JSON(200, gin.H{"balance": balance, "currency": creditDatail[0].Currency, "time": time.Now().Unix(), "refID": refID})
 }
 
 func Rollback(c *gin.Context) {
@@ -313,9 +327,6 @@ func Rollback(c *gin.Context) {
 	// Step 7: Get Credit Amount
 	creditRecord, _ := model.GetTransferByBetID(betID, "Credit")
 
-	fmt.Println("amount_int: ", amount_int)
-	fmt.Println("debitRecord.Amount: ", debitRecord.Amount)
-	fmt.Println("creditRecord.Amount: ", creditRecord.Amount)
 	// Step 7: Check Rollback Amount
 	if amount_int != (debitRecord.Amount - creditRecord.Amount) {
 		utils.ErrorResponse(c, 400, "Incorrect Rollback Amount: ", err)
