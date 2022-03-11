@@ -222,7 +222,7 @@ func Credit(c *gin.Context) {
 		// Step 2.4: Check Debit Record
 		debitRecord, err := model.GetTransferByBetID(v.BetID, "Debit")
 		if err != nil || debitRecord.PlayerID == "" {
-			utils.ErrorResponse(c, 400, "Failed to read bet transaction: ", err)
+			utils.ErrorResponse(c, 410, "Failed to read bet transaction: ", err)
 			return
 		}
 
@@ -307,7 +307,7 @@ func Rollback(c *gin.Context) {
 	// Step 4: Check Debit Record
 	debitRecord, err := model.GetTransferByBetID(betID, "Debit")
 	if err != nil || debitRecord.PlayerID == "" {
-		utils.ErrorResponse(c, 500, "Failed to read bet transaction: ", err)
+		utils.ErrorResponse(c, 410, "Failed to read bet transaction: ", err)
 		return
 	}
 
@@ -328,8 +328,8 @@ func Rollback(c *gin.Context) {
 	creditRecord, _ := model.GetTransferByBetID(betID, "Credit")
 
 	// Step 7: Check Rollback Amount
-	if amount_int != (debitRecord.Amount - creditRecord.Amount) {
-		utils.ErrorResponse(c, 400, "Incorrect Rollback Amount: ", err)
+	if amount_int > 0 && amount_int != (debitRecord.Amount-creditRecord.Amount) {
+		utils.ErrorResponse(c, 409, "Incorrect Rollback Amount: ", err)
 		return
 	}
 
