@@ -11,6 +11,7 @@ require (
 	github.com/go-xorm/xorm v0.7.9
 	github.com/google/uuid v1.2.0
 	github.com/rs/xid v1.3.0
-	github.com/sirupsen/logrus v1.2.0
+	github.com/sirupsen/logrus v1.6.0
+	github.com/spf13/viper v1.13.0
 	xorm.io/core v0.7.3
 )

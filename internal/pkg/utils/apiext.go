@@ -19,7 +19,7 @@ func ErrorResponse(c *gin.Context, code int, msg string, err error) {
 }
 
 func WriteLog(msg string) {
-	f, err := os.OpenFile(fmt.Sprint(time.Now().Format("01-02-2006"))+".log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile("log/"+fmt.Sprint(time.Now().Format("01-02-2006"))+".log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		panic(err)
 	}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/noworldwar/single_wallet_api/internal/model"
 	"github.com/noworldwar/single_wallet_api/internal/pkg/utils"
 	"github.com/rs/xid"
+	"github.com/spf13/viper"
 )
 
 type creditDatail struct {
@@ -27,6 +29,7 @@ type creditDatail struct {
 }
 
 func Validate(c *gin.Context) {
+	fmt.Println(viper.GetString("operator_id"))
 	token := c.PostForm("token")
 	appSecret := c.PostForm("appSecret")
 	operatorID := c.PostForm("operatorID")

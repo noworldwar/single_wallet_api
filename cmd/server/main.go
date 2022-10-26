@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
+	app.InitConfig()
 	app.InitMySQL()
 	app.InitRedis()
 	app.InitRouter()

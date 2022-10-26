@@ -1,0 +1,10 @@
+version: '3'
+services:      
+  single_wallet_api:    
+    image: single_wallet_api
+    build: 
+      context: .   
+      dockerfile: Dockerfile 
+    ports:
+      # change this to match the service address port
+      - "7901:7901"
