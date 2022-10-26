@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func CheckPostFormData(c *gin.Context, vals ...string) string {
@@ -16,7 +17,7 @@ func CheckPostFormData(c *gin.Context, vals ...string) string {
 }
 
 func CheckAppSecret(operatorID, appSecret string) bool {
-	if operatorID == "14e5sfbg" && appSecret == "uLtBNRdp8qAlw9EHaFQSl_daPHmCl3zCCmmwfnb0ShE=" {
+	if operatorID == viper.GetString("operator_id") && appSecret == viper.GetString("app_secret") {
 		return false
 	} else {
 		return true
